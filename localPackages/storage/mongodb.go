@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"net/url"
 	"time"
 
 	"github.com/mailhog/data"
@@ -22,9 +23,17 @@ type MongoDB struct {
 
 // CreateMongoDB creates a MongoDB backed storage backend
 func CreateMongoDB(uri, db, coll string) *MongoDB {
-	log.Printf("Connecting to MongoDB: %s\n", uri)
+	parsedUri, parsedUriError := url.Parse(uri)
+
+	if parsedUriError != nil {
+		log.Printf("Error parsing the provided mongo uri %s", parsedUriError)
+		return nil
+	}
+
+	log.Printf("Connecting to MongoDB: %s\n", parsedUri.Scheme + "//" + parsedUri.Host + parsedUri.Path)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Printf("Error connecting to MongoDB: %s", err)
