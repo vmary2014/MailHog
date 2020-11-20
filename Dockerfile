@@ -6,10 +6,10 @@ FROM golang:alpine
 
 # Install MailHog:
 RUN apk --no-cache add --virtual build-dependencies \
-    git \
+  git \
   && mkdir -p /root/gocode \
   && export GOPATH=/root/gocode \
-  && go get github.com/mailhog/MailHog \
+  && go get github.com/vmary2014/MailHog \
   && mv /root/gocode/bin/MailHog /usr/local/bin \
   && rm -rf /root/gocode \
   && apk del --purge build-dependencies
